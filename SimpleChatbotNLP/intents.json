@@ -1,0 +1,89 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey",
+        "Good morning",
+        "Good afternoon",
+        "Good evening"
+      ],
+      "responses": [
+        "Hello! How can I help you today?",
+        "Hi there! What can I do for you?",
+        "Hey! How are you doing?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "Bye",
+        "Goodbye",
+        "See you later",
+        "Talk to you later",
+        "Have a good day"
+      ],
+      "responses": [
+        "Goodbye! Have a great day!",
+        "See you later!",
+        "Take care!"
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "Thank you",
+        "Thanks",
+        "Thanks a lot",
+        "I appreciate it",
+        "okay"
+      ],
+      "responses": [
+        "You're welcome!",
+        "Happy to help!",
+        "No problem!",
+        "Yes!"
+
+      ]
+    },
+    {
+      "tag": "creator",
+      "patterns": [
+        "Who created you",
+        "Who made you",
+        "How were you made",
+        "Who is your creator",
+        "Who built you",
+        "Who developed you"
+      ],
+      "responses": [
+        "I was created by Godwin Okronipa as a side project!",
+        "Godwin Okronipa built me as one of his side projects.",
+        "I'm a creation of Godwin Okronipa, he developed me as a personal project!"
+      ]
+    },
+    {
+      "tag": "actions",
+      "patterns": [
+        "Tell me a story",
+        "Write me an email",
+        "What is",
+        "Can you do",
+        "Help me with",
+        "Show me how to",
+        "Explain",
+        "Calculate",
+        "Solve this",
+        "Create something"
+      ],
+      "responses": [
+        "Sorry, I can't help with that. I will be able to sing very soon!",
+        "I'm not able to do that right now, but I'll have more features coming soon!",
+        "That's beyond my current capabilities, but stay tuned for updates!",
+        "I can't assist with that particular request, but I'm learning new tricks!"
+      ]
+    }
+  ]
+}
