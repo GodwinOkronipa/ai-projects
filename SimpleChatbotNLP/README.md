@@ -15,14 +15,6 @@ This chatbot can handle basic conversations including greetings, farewells, than
 - **Machine Learning**: Employs Logistic Regression with TF-IDF vectorization
 - **Extensible**: Easy to add new intents and responses
 
-## Project Structure
-
-SimpleChatbotNLP/
- intents.json        # Training data with intents, patterns, and responses
- train_chatbot.py    # Model training script
- chatbot.py          # Main chatbot interface
- README.md           # This file
-
 
 ## Supported Intents
 
