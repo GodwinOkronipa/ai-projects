@@ -7,11 +7,16 @@ from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
-# Ensure you have the 'punkt' NLTK resource downloaded
+# Ensure you have the required NLTK resources downloaded
 try:
     _ = nltk.data.find('tokenizers/punkt')
-except nltk.downloader.DownloadError:
+except LookupError:
     nltk.download('punkt')
+
+try:
+    _ = nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
 
 # Initialize the stemmer, this gives the most basic representation of the words
 stemmer = PorterStemmer()

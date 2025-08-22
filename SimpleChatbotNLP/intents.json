@@ -84,6 +84,131 @@
         "That's beyond my current capabilities, but stay tuned for updates!",
         "I can't assist with that particular request, but I'm learning new tricks!"
       ]
+    },
+    {
+      "tag": "ml_basics",
+      "patterns": [
+        "What is machine learning",
+        "Define machine learning",
+        "Explain machine learning",
+        "What is ML",
+        "Machine learning definition",
+        "How does machine learning work",
+        "What does machine learning mean"
+      ],
+      "responses": [
+        "Machine Learning is a subset of AI that enables computers to learn and make decisions from data without being explicitly programmed for every task.",
+        "ML is the science of getting computers to act without being explicitly programmed by learning patterns from data.",
+        "Machine Learning allows systems to automatically learn and improve from experience without being explicitly programmed for each scenario."
+      ]
+    },
+    {
+      "tag": "ml_types",
+      "patterns": [
+        "Types of machine learning",
+        "What are the types of ML",
+        "Machine learning categories",
+        "Supervised vs unsupervised learning",
+        "Different kinds of machine learning",
+        "ML algorithms types"
+      ],
+      "responses": [
+        "The main types are: Supervised Learning (with labeled data), Unsupervised Learning (finding patterns in unlabeled data), and Reinforcement Learning (learning through rewards and penalties).",
+        "Machine Learning has three main categories: Supervised (classification/regression), Unsupervised (clustering/dimensionality reduction), and Reinforcement Learning (decision making).",
+        "There are three primary types: Supervised learning uses labeled examples, Unsupervised learning finds hidden patterns, and Reinforcement learning learns through trial and error."
+      ]
+    },
+    {
+      "tag": "supervised_learning",
+      "patterns": [
+        "What is supervised learning",
+        "Explain supervised learning",
+        "Supervised machine learning",
+        "Classification and regression",
+        "Labeled data learning"
+      ],
+      "responses": [
+        "Supervised learning uses labeled training data to learn a mapping from inputs to outputs. It includes classification (predicting categories) and regression (predicting continuous values).",
+        "In supervised learning, we train models on input-output pairs. Common examples include email spam detection (classification) and house price prediction (regression).",
+        "Supervised learning algorithms learn from examples with known correct answers, like training a model to recognize cats by showing it many labeled cat and non-cat images."
+      ]
+    },
+    {
+      "tag": "unsupervised_learning",
+      "patterns": [
+        "What is unsupervised learning",
+        "Explain unsupervised learning",
+        "Unsupervised machine learning",
+        "Clustering algorithms",
+        "Pattern recognition without labels"
+      ],
+      "responses": [
+        "Unsupervised learning finds hidden patterns in data without labeled examples. Common techniques include clustering (grouping similar data) and dimensionality reduction.",
+        "This type of learning discovers structure in data without being told what to look for. Examples include customer segmentation and anomaly detection.",
+        "Unsupervised learning is like finding patterns in data without a teacher - algorithms discover relationships and structures on their own."
+      ]
+    },
+    {
+      "tag": "algorithms",
+      "patterns": [
+        "Popular machine learning algorithms",
+        "Common ML algorithms",
+        "Best machine learning algorithms",
+        "Linear regression algorithm",
+        "Decision tree algorithm",
+        "Neural networks",
+        "Random forest",
+        "SVM algorithm"
+      ],
+      "responses": [
+        "Popular algorithms include Linear Regression, Decision Trees, Random Forest, Support Vector Machines (SVM), Neural Networks, and K-Means clustering.",
+        "Common ML algorithms are: Linear/Logistic Regression for simple predictions, Decision Trees for interpretable models, and Neural Networks for complex patterns.",
+        "Key algorithms include: Random Forest (ensemble method), SVM (classification), K-Means (clustering), and Deep Learning networks for complex data like images and text."
+      ]
+    },
+    {
+      "tag": "deep_learning",
+      "patterns": [
+        "What is deep learning",
+        "Deep learning vs machine learning",
+        "Neural networks explained",
+        "Artificial neural networks",
+        "Deep neural networks"
+      ],
+      "responses": [
+        "Deep Learning is a subset of ML using artificial neural networks with multiple layers to learn complex patterns, especially effective for images, text, and speech.",
+        "Deep Learning uses neural networks inspired by the human brain, with multiple layers that can automatically learn features from raw data like pixels or words.",
+        "It's called 'deep' because of the many layers in neural networks. Deep learning has revolutionized AI in areas like computer vision and natural language processing."
+      ]
+    },
+    {
+      "tag": "ml_applications",
+      "patterns": [
+        "Machine learning applications",
+        "Uses of machine learning",
+        "ML in real world",
+        "Machine learning examples",
+        "Where is ML used"
+      ],
+      "responses": [
+        "ML is used everywhere: recommendation systems (Netflix, Amazon), image recognition (photo tagging), natural language processing (chatbots), autonomous vehicles, and medical diagnosis.",
+        "Real-world applications include: fraud detection in banking, personalized advertising, voice assistants like Siri, predictive maintenance in manufacturing, and drug discovery.",
+        "Machine learning powers search engines, social media feeds, email spam filters, language translation, weather forecasting, and even this chatbot you're talking to!"
+      ]
+    },
+    {
+      "tag": "data_science",
+      "patterns": [
+        "What is data science",
+        "Data science vs machine learning",
+        "Data scientist role",
+        "Data analysis and ML"
+      ],
+      "responses": [
+        "Data Science is a broader field that includes statistics, data analysis, and machine learning to extract insights from data and solve business problems.",
+        "While ML focuses on building predictive models, Data Science encompasses the entire process: data collection, cleaning, analysis, visualization, and storytelling.",
+        "Data scientists use ML as one tool among many, combining domain expertise, programming skills, and statistical knowledge to solve real-world problems."
+      ]
     }
   ]
 }

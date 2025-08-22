@@ -1,10 +1,14 @@
 # SimpleChatbotNLP
 
-A simple Natural Language Processing chatbot built with Python, using Logistic Regression for intent classification and NLTK for text preprocessing.
+A Natural Language Processing chatbot built with Python, using Logistic Regression for intent classification and NLTK for text preprocessing. Now enhanced with **Machine Learning knowledge** to answer questions about ML concepts, algorithms, and applications
 
 ## Overview
 
-This chatbot can handle basic conversations including greetings, farewells, thanks, questions about its creator, and gracefully deflects complex requests it cannot fulfill.
+This intelligent chatbot can handle conversations about:
+- Basic interactions (greetings, farewells, thanks)
+- Questions about its creator
+- **Machine Learning topics** (algorithms, concepts, applications)
+- Data Science fundamentals
 
 **Created by:** Godwin Okronipa as a side project
 
@@ -26,10 +30,23 @@ SimpleChatbotNLP/
 
 ## Supported Intents
 
+### Basic Interactions
 - **Greeting**: Hi, Hello, Hey, Good morning, etc.
 - **Goodbye**: Bye, Goodbye, See you later, etc.
 - **Thanks**: Thank you, Thanks, I appreciate it, etc.
 - **Creator**: Who created you, Who made you, etc.
+
+### Machine Learning & Data Science
+- **ML Basics**: What is machine learning, How does ML work, etc.
+- **ML Types**: Supervised vs unsupervised learning, Types of ML, etc.
+- **Supervised Learning**: Classification, regression, labeled data, etc.
+- **Unsupervised Learning**: Clustering, pattern recognition, etc.
+- **Algorithms**: Popular ML algorithms, neural networks, decision trees, etc.
+- **Deep Learning**: Neural networks, deep vs machine learning, etc.
+- **ML Applications**: Real-world uses, examples, where ML is used, etc.
+- **Data Science**: Data science vs ML, data scientist role, etc.
+
+### General
 - **Actions**: Handles requests the bot cannot yet fulfill (stories, emails, calculations, etc.)
 
 ## Installation
@@ -65,6 +82,12 @@ SimpleChatbotNLP/
    ```
    You: Hello
    Chatbot: Hi there! What can I do for you?
+   
+   You: What is machine learning?
+   Chatbot: Machine Learning is a subset of AI that enables computers to learn and make decisions from data without being explicitly programmed for every task.
+   
+   You: Types of machine learning
+   Chatbot: The main types are: Supervised Learning (with labeled data), Unsupervised Learning (finding patterns in unlabeled data), and Reinforcement Learning (learning through rewards and penalties).
    
    You: Who created you?
    Chatbot: I was created by Godwin Okronipa as a side project!
