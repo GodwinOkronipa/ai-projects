@@ -14,7 +14,7 @@ from evaluation.metrics import print_evaluation_metrics
 def main():
     """Main function to run the flood mapping workflow."""
     
-    # --- 1. Configuration: Update these file paths ---
+    # --- 1. Configuration: Update these file paths in the data folder ---
     S1_FILE = 'data/sentinel1.tif'
     S2_FILE = 'data/sentinel2.tif'
     MASK_FILE = 'data/flood_mask.tif'
