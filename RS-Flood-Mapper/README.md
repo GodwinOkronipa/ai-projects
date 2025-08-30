@@ -1,6 +1,6 @@
 # RS Flood Mapper: A Remote Sensing Project
 
-## 📖 Overview
+## Overview
 
 A remote sensor Flood Mapper built with python libraries. This project uses satellite imagery to detect and map flooded areas. We use a combination of Sentinel-1 (Radar) and Sentinel-2 (Optical) data and compare two different machine learning approaches: a classic Random Forest classifier and a deep learning U-Net model.
 
@@ -8,7 +8,7 @@ This project is intended as an educational tool to demonstrate a full remote sen
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Data Preprocessing**: Scripts to clean and prepare Sentinel-1 and Sentinel-2 satellite data, including speckle filtering, normalization, and NDWI calculation.
 - **Dual-Model Approach**: Implements both a `RandomForest` model and a `U-Net` for semantic segmentation.
