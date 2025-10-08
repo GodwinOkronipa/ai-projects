@@ -1,142 +1,215 @@
-import numpy as np
-import pandas as pd
+"""
+Decision Tree Classifier from Scratch implementing Gini Impurity and Entropy Splitting.
 
-# The core data structure for tree
+Author: godmode-dev
+License: MIT
+"""
+
+import numpy as np
+from typing import Optional, List, Dict, Union, Tuple
+
+
 class Node:
-    def __init__(self, feature_index=None, threshold=None, left=None, right=None, value=None):
-        # For a decision node
-        self.feature_index = feature_index # The feature to split on
-        self.threshold = threshold         # The value to split at
-        self.left = left                   # Left child node (if condition is met)
-        self.right = right                 # Right child node (if condition is not met)
-        
-        # For a leaf node
-        self.value = value                 # The final prediction (e.g., 0 or 1)
+    """
+    Node structure for the Decision Tree.
+    """
+
+    def __init__(
+        self,
+        feature: Optional[int] = None,
+        threshold: Optional[float] = None,
+        left: Optional["Node"] = None,
+        right: Optional["Node"] = None,
+        *,
+        value: Optional[int] = None,
+        gain: Optional[float] = None
+    ) -> None:
+        self.feature = feature
+        self.threshold = threshold
+        self.left = left
+        self.right = right
+        self.value = value
+        self.gain = gain
+
+    def is_leaf_node(self) -> bool:
+        return self.value is not None
+
 
 class DecisionTreeClassifier:
-    def __init__(self, max_depth=5):
-        self.max_depth = max_depth # The maximum depth of the tree to prevent overfitting
-        self.root = None           # The root node of the tree
+    """
+    Decision Tree Classifier for multi-class classification.
 
-    def fit(self, X, y):
-        # We start building the tree from the root
-        self.root = self._build_tree(X, y, 0)
+    Parameters
+    ----------
+    max_depth : int, default=10
+        Maximum depth of the tree.
+    min_samples_split : int, default=2
+        Minimum number of samples required to split an internal node.
+    criterion : str, default='gini'
+        The function to measure split quality ('gini' or 'entropy').
+    """
 
-    def predict(self, X):
-        # Iterate through each data point and make a prediction
-        return [self._predict(inputs) for inputs in X]
+    def __init__(
+        self,
+        max_depth: int = 10,
+        min_samples_split: int = 2,
+        criterion: str = "gini"
+    ) -> None:
+        self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
+        self.criterion = criterion
+        self.root: Optional[Node] = None
+        self.feature_importances_: Optional[np.ndarray] = None
 
-    def _predict(self, inputs):
-        # Walk down the tree until we reach a leaf node
-        node = self.root
-        while node.value is None:
-            if inputs[node.feature_index] <= node.threshold:
-                node = node.left
-            else:
-                node = node.right
-        return node.value
+    def fit(self, X: np.ndarray, y: np.ndarray) -> "DecisionTreeClassifier":
+        """Build decision tree from training dataset."""
+        X = np.array(X, dtype=np.float64)
+        y = np.array(y, dtype=int).ravel()
 
-    def _build_tree(self, X, y, current_depth):
+        n_features = X.shape[1]
+        self.feature_importances_ = np.zeros(n_features)
+        self.root = self._build_tree(X, y, depth=0)
+        
+        # Normalize feature importances
+        total_imp = np.sum(self.feature_importances_)
+        if total_imp > 0:
+            self.feature_importances_ /= total_imp
+
+        return self
+
+    def _build_tree(self, X: np.ndarray, y: np.ndarray, depth: int) -> Node:
         n_samples, n_features = X.shape
         n_labels = len(np.unique(y))
 
-        # Check for stopping criteria:
-        # 1. If all samples in the current node belong to the same class
-        # 2. If we've reached the maximum allowed depth
-        if n_labels == 1 or current_depth >= self.max_depth:
-            # This is a leaf node, so the value is the most common class
+        # Check stopping criteria
+        if (
+            depth >= self.max_depth
+            or n_labels == 1
+            or n_samples < self.min_samples_split
+        ):
             leaf_value = self._most_common_label(y)
             return Node(value=leaf_value)
 
-        # Find the best split for the current data
-        best_split = self._find_best_split(X, y)
+        # Find best split
+        best_feat, best_thresh, best_gain = self._best_split(X, y, n_features)
+
+        if best_gain == 0.0 or best_feat is None:
+            return Node(value=self._most_common_label(y))
+
+        # Record feature importance contribution
+        self.feature_importances_[best_feat] += best_gain * n_samples
+
+        # Split children recursively
+        left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
+        left_child = self._build_tree(X[left_idxs, :], y[left_idxs], depth + 1)
+        right_child = self._build_tree(X[right_idxs, :], y[right_idxs], depth + 1)
+
+        return Node(
+            feature=best_feat,
+            threshold=best_thresh,
+            left=left_child,
+            right=right_child,
+            gain=best_gain
+        )
+
+    def _best_split(
+        self, X: np.ndarray, y: np.ndarray, n_features: int
+    ) -> Tuple[Optional[int], Optional[float], float]:
+        best_gain = -1.0
+        split_feat, split_thresh = None, None
+
+        for feat_idx in range(n_features):
+            X_column = X[:, feat_idx]
+            thresholds = np.unique(X_column)
+
+            for thresh in thresholds:
+                gain = self._information_gain(y, X_column, thresh)
+
+                if gain > best_gain:
+                    best_gain = gain
+                    split_feat = feat_idx
+                    split_thresh = thresh
+
+        return split_feat, split_thresh, max(best_gain, 0.0)
+
+    def _information_gain(self, y: np.ndarray, X_column: np.ndarray, threshold: float) -> float:
+        parent_impurity = self._calculate_impurity(y)
+
+        left_idxs, right_idxs = self._split(X_column, threshold)
+        if len(left_idxs) == 0 or len(right_idxs) == 0:
+            return 0.0
+
+        n = len(y)
+        n_l, n_r = len(left_idxs), len(right_idxs)
+        imp_l, imp_r = self._calculate_impurity(y[left_idxs]), self._calculate_impurity(y[right_idxs])
+        child_impurity = (n_l / n) * imp_l + (n_r / n) * imp_r
+
+        return parent_impurity - child_impurity
+
+    def _split(self, X_column: np.ndarray, split_thresh: float) -> Tuple[np.ndarray, np.ndarray]:
+        left_idxs = np.argwhere(X_column <= split_thresh).flatten()
+        right_idxs = np.argwhere(X_column > split_thresh).flatten()
+        return left_idxs, right_idxs
+
+    def _calculate_impurity(self, y: np.ndarray) -> float:
+        if len(y) == 0:
+            return 0.0
         
-        # If no split improves the Gini impurity, we stop here
-        if best_split is None or best_split['gini_gain'] == 0:
-            leaf_value = self._most_common_label(y)
-            return Node(value=leaf_value)
-
-        # Recursively build the left and right children
-        left_indices = best_split['left_indices']
-        right_indices = best_split['right_indices']
-
-        left_child = self._build_tree(X[left_indices], y[left_indices], current_depth + 1)
-        right_child = self._build_tree(X[right_indices], y[right_indices], current_depth + 1)
-        
-        return Node(best_split['feature_index'], best_split['threshold'], left_child, right_child)
-
-    def _find_best_split(self, X, y):
-        best_split = None
-        best_gini_gain = -1
-
-        for feature_index in range(X.shape[1]):
-            thresholds = np.unique(X[:, feature_index])
-            for threshold in thresholds:
-                # Split the data based on the current feature and threshold
-                left_indices = np.where(X[:, feature_index] <= threshold)[0]
-                right_indices = np.where(X[:, feature_index] > threshold)[0]
-                
-                # We can't split if one side is empty
-                if len(left_indices) == 0 or len(right_indices) == 0:
-                    continue
-
-                # Calculate Gini Impurity for the split
-                current_gini = self._gini_impurity(y)
-                gini_gain = current_gini - self._weighted_gini_impurity(y[left_indices], y[right_indices])
-
-                if gini_gain > best_gini_gain:
-                    best_gini_gain = gini_gain
-                    best_split = {
-                        'feature_index': feature_index,
-                        'threshold': threshold,
-                        'left_indices': left_indices,
-                        'right_indices': right_indices,
-                        'gini_gain': gini_gain
-                    }
-        return best_split
-
-    def _gini_impurity(self, y):
-        # Gini Impurity: a measure of how "mixed" the labels are
         _, counts = np.unique(y, return_counts=True)
         probabilities = counts / len(y)
-        gini = 1 - np.sum(probabilities**2)
-        return gini
 
-    def _weighted_gini_impurity(self, y_left, y_right):
-        n_left = len(y_left)
-        n_right = len(y_right)
-        total_samples = n_left + n_right
-        
-        gini_left = self._gini_impurity(y_left)
-        gini_right = self._gini_impurity(y_right)
-        
-        weighted_gini = (n_left / total_samples) * gini_left + (n_right / total_samples) * gini_right
-        return weighted_gini
+        if self.criterion == "entropy":
+            return -np.sum(probabilities * np.log2(probabilities + 1e-15))
+        else:  # Gini
+            return 1.0 - np.sum(probabilities ** 2)
 
-    def _most_common_label(self, y):
-        # Helper function to find the most frequent class in a set of labels
-        counts = np.bincount(y)
-        return np.argmax(counts)
+    def _most_common_label(self, y: np.ndarray) -> int:
+        if len(y) == 0:
+            return 0
+        vals, counts = np.unique(y, return_counts=True)
+        return int(vals[np.argmax(counts)])
 
-# --- EXAMPLE ---
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """Predict labels for sample array."""
+        if self.root is None:
+            raise ValueError("Model is not fitted yet.")
 
-# Sample data
-data = {'Hours Studied': [2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5],
-        'Attended Review': [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0],
-        'Passed Exam': [0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0]}
+        X = np.array(X, dtype=np.float64)
+        return np.array([self._traverse_tree(x, self.root) for x in X])
 
-df = pd.DataFrame(data)
+    def _traverse_tree(self, x: np.ndarray, node: Node) -> int:
+        if node.is_leaf_node():
+            return int(node.value)
 
-# Convert DataFrame to a NumPy array for our algorithm
-X_data = df[['Hours Studied', 'Attended Review']].values
-y_data = df['Passed Exam'].values
+        if x[node.feature] <= node.threshold:
+            return self._traverse_tree(x, node.left)
+        return self._traverse_tree(x, node.right)
 
-# Create and train the model
-model = DecisionTreeClassifier(max_depth=3)
-model.fit(X_data, y_data)
+    def print_tree(self, node: Optional[Node] = None, indent: str = "  ") -> None:
+        """Print ASCII representation of decision tree structure."""
+        if node is None:
+            node = self.root
 
-# Make a prediction for a new student: 5 hours studied, attended review (1)
-new_student = np.array([[5, 1]])
-prediction = model.predict(new_student)
+        if node.is_leaf_node():
+            print(f"{indent}Predict Class -> {node.value}")
+            return
 
-print(f"The model predicts the student will {'Pass' if prediction[0] == 1 else 'Fail'}.")
+        print(f"{indent}[Feature {node.feature} <= {node.threshold:.4f}] (Gain: {node.gain:.4f})")
+        print(f"{indent}├── Left:")
+        self.print_tree(node.left, indent + "│   ")
+        print(f"{indent}└── Right:")
+        self.print_tree(node.right, indent + "    ")
+
+
+if __name__ == "__main__":
+    from sklearn.datasets import make_classification
+    X, y = make_classification(n_samples=100, n_features=4, n_classes=2, random_state=42)
+
+    clf = DecisionTreeClassifier(max_depth=4, criterion="gini")
+    clf.fit(X, y)
+
+    preds = clf.predict(X)
+    acc = np.mean(preds == y)
+    print(f"Training Accuracy: {acc * 100:.2f}%")
+    print("\nDecision Tree Structure:")
+    clf.print_tree()
