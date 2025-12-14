@@ -1,81 +1,106 @@
-#reads intents.json file, preprocesses the text, trains a Logistic Regression classifier(see ml-algorithms) and saves the trained model
+"""
+Training pipeline for TF-IDF + LogisticRegression NLP Intent Classifier.
+
+Author: godmode-dev
+License: MIT
+"""
+
+import os
 import json
+import pickle
 import numpy as np
 import nltk
-import pickle
+from typing import Tuple, List, Dict
 from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
-# Ensure you have the required NLTK resources downloaded
-try:
-    _ = nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+# Download required NLTK tokenizers safely
+for resource in ["punkt", "punkt_tab"]:
+    try:
+        nltk.data.find(f"tokenizers/{resource}")
+    except LookupError:
+        try:
+            nltk.download(resource, quiet=True)
+        except Exception:
+            pass
 
-try:
-    _ = nltk.data.find('tokenizers/punkt_tab')
-except LookupError:
-    nltk.download('punkt_tab')
-
-# Initialize the stemmer, this gives the most basic representation of the words
 stemmer = PorterStemmer()
 
-#Preprocessing Functions 
-def tokenize_and_stem(word_list):
-    ignore_words = ['?', '!', '.', ',']
-    return [stemmer.stem(w.lower()) for w in word_list if w not in ignore_words]
 
-def prepare_data():
-    with open('intents.json', 'r') as f:
-        intents = json.load(f)
+def tokenize_and_stem(text_or_tokens) -> List[str]:
+    """Tokenize and stem text string or token list."""
+    ignore_words = ["?", "!", ".", ",", ";", ":"]
+    if isinstance(text_or_tokens, str):
+        tokens = nltk.word_tokenize(text_or_tokens)
+    else:
+        tokens = text_or_tokens
 
-    all_words = []
+    return [stemmer.stem(w.lower()) for w in tokens if w not in ignore_words]
+
+
+def load_intents(json_path: str) -> Dict:
+    """Load and validate intents JSON file."""
+    if not os.path.exists(json_path):
+        raise FileNotFoundError(f"Intents file not found at {json_path}")
+    with open(json_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def prepare_dataset(intents_dict: Dict) -> Tuple[np.ndarray, np.ndarray, TfidfVectorizer, List[str]]:
+    """Preprocess patterns, build TF-IDF matrix and target vector."""
+    corpus = []
+    labels = []
     tags = []
-    xy = []
 
-    for intent in intents['intents']:
-        tag = intent['tag']
-        tags.append(tag)
-        for pattern in intent['patterns']:
-            tokenized_pattern = nltk.word_tokenize(pattern)
-            all_words.extend(tokenized_pattern)
-            xy.append((tokenized_pattern, tag))
+    for intent in intents_dict["intents"]:
+        tag = intent["tag"]
+        if tag not in tags:
+            tags.append(tag)
 
-    all_words = tokenize_and_stem(all_words)
-    all_words = sorted(list(set(all_words)))
-    tags = sorted(list(set(tags)))
+        for pattern in intent["patterns"]:
+            stemmed_pattern = " ".join(tokenize_and_stem(pattern))
+            corpus.append(stemmed_pattern)
+            labels.append(tag)
 
-    corpus = [' '.join(tokenize_and_stem(tokenized_pattern)) for tokenized_pattern, tag in xy]
-    vectorizer = TfidfVectorizer()
-    X_train_vectorized = vectorizer.fit_transform(corpus)
+    tags = sorted(tags)
+    y_train = np.array([tags.index(tag) for tag in labels])
 
-    y_train = []
-    for _, tag in xy:
-        label = [0] * len(tags)
-        label[tags.index(tag)] = 1
-        y_train.append(label)
-
-    X_train = np.array(X_train_vectorized.toarray())
-    y_train = np.array(y_train)
+    vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
+    X_train = vectorizer.fit_transform(corpus).toarray()
 
     return X_train, y_train, vectorizer, tags
 
-#Training the Model 
-if __name__ == "__main__":
-    X_train, y_train, vectorizer, tags = prepare_data()
 
-    print("Starting model training...")
-    model = LogisticRegression(solver='liblinear', random_state=42)
-    model.fit(X_train, np.argmax(y_train, axis=1))
-    print("Model training complete.")
+def train_and_save_model(
+    intents_path: str = "intents.json",
+    model_dir: str = "."
+) -> Tuple[LogisticRegression, TfidfVectorizer, List[str]]:
+    """Train intent classifier and dump artifacts."""
+    intents_dict = load_intents(intents_path)
+    X_train, y_train, vectorizer, tags = prepare_dataset(intents_dict)
 
-    #  Saving the Model and Vectorizer
-    with open('chatbot_model.pkl', 'wb') as f:
+    print(f"Training Intent Classifier on {len(X_train)} patterns across {len(tags)} intent tags...")
+    model = LogisticRegression(solver="liblinear", C=1.5, random_state=42)
+    model.fit(X_train, y_train)
+
+    # Save artifacts
+    model_path = os.path.join(model_dir, "chatbot_model.pkl")
+    vectorizer_path = os.path.join(model_dir, "vectorizer.pkl")
+    tags_path = os.path.join(model_dir, "tags.pkl")
+
+    with open(model_path, "wb") as f:
         pickle.dump(model, f)
-    with open('vectorizer.pkl', 'wb') as f:
+    with open(vectorizer_path, "wb") as f:
         pickle.dump(vectorizer, f)
-    with open('tags.pkl', 'wb') as f:
+    with open(tags_path, "wb") as f:
         pickle.dump(tags, f)
-    
-    print("All necessary files saved.")
+
+    print("Model artifacts successfully saved!")
+    return model, vectorizer, tags
+
+
+if __name__ == "__main__":
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    intents_file = os.path.join(script_dir, "intents.json")
+    train_and_save_model(intents_file, script_dir)
