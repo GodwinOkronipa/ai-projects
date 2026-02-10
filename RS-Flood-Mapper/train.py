@@ -1,95 +1,98 @@
-# train.py
+"""
+PyTorch Deep Learning Training Pipeline for Satellite Remote Sensing Flood Mapping.
 
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-import rasterio
+Author: godmode-dev
+License: MIT
+"""
 
-# Import our custom modules
-from preprocessing.data_loader import load_geotiff
-from preprocessing.preprocessor import apply_speckle_filter, normalize_image, calculate_ndwi
-from models.random_forest import prepare_data_for_rf, train_random_forest, predict_with_rf
-from evaluation.metrics import print_evaluation_metrics
+import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from typing import Dict
 
-def main():
-    """Main function to run the flood mapping workflow."""
-    
-    # --- 1. Configuration: Update these file paths in the data folder ---
-    S1_FILE = 'data/sentinel1.tif'
-    S2_FILE = 'data/sentinel2.tif'
-    MASK_FILE = 'data/flood_mask.tif'
-    OUTPUT_PREDICTION_FILE = 'data/rf_prediction.tif'
+from models.unet import UNet
+from preprocessing.data_loader import get_dataloaders
+from evaluation.evaluate import calculate_segmentation_metrics
 
-    # --- 2. Load Data ---
-    print("--- Starting Data Loading ---")
-    s1_image, meta = load_geotiff(S1_FILE)
-    s2_image, _ = load_geotiff(S2_FILE)
-    flood_mask, _ = load_geotiff(MASK_FILE)
 
-    # Basic check to ensure data was loaded and is compatible
-    if s1_image is None or s2_image is None or flood_mask is None:
-        print("Failed to load data. Please check file paths and integrity. Exiting.")
-        return
-    if s1_image.shape != flood_mask.shape or s2_image.shape[1:] != flood_mask.shape:
-        print("Image and mask dimensions do not match! Please use co-registered data. Exiting.")
-        return
+class DiceBCELoss(nn.Module):
+    """Combined Binary Cross Entropy and Dice Loss for semantic segmentation."""
 
-    # --- 3. Preprocessing and Feature Engineering ---
-    print("\n--- Starting Preprocessing ---")
-    # Process Sentinel-1 data
-    s1_filtered = apply_speckle_filter(s1_image)
-    s1_normalized = normalize_image(s1_filtered)
-    
-    # Process Sentinel-2 data
-    ndwi = calculate_ndwi(s2_image)
-    ndwi_normalized = normalize_image(ndwi)
-    
-    # For this simple project, we'll just use the first 3 bands of S2 for color
-    s2_rgb_normalized = normalize_image(s2_image[:3, :, :])
+    def __init__(self):
+        super().__init__()
+        self.bce = nn.BCELoss()
 
-    # --- 4. Feature Combination ---
-    # Stack all our features into a single array
-    # The shape will be (height, width, num_features)
-    # The order of features is: S1, NDWI, S2_Band1, S2_Band2, S2_Band3
-    print("\n--- Combining Features ---")
-    
-    # Transpose S2 RGB bands to be (height, width, bands)
-    s2_rgb_transposed = np.transpose(s2_rgb_normalized, (1, 2, 0))
-    
-    # Stack features along the last axis (the channel axis)
-    all_features = np.dstack((
-        s1_normalized, 
-        ndwi_normalized,
-        s2_rgb_transposed
-    ))
-    
-    print(f"Final feature array shape: {all_features.shape}")
+    def forward(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        bce_loss = self.bce(pred, target)
+        intersection = (pred * target).sum()
+        dice_loss = 1.0 - (2.0 * intersection + 1e-7) / (pred.sum() + target.sum() + 1e-7)
+        return bce_loss + dice_loss
 
-    # --- 5. Random Forest Model Training and Prediction ---
-    print("\n--- Starting Random Forest Workflow ---")
-    X, y = prepare_data_for_rf(all_features, flood_mask)
-    
-    # Split data for training and testing to evaluate the model fairly
-    # Using only 10% of pixels for training to speed things up for this example
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.9, random_state=42, stratify=y)
-    
-    rf_model = train_random_forest(X_train, y_train)
-    
-    # Make prediction on the entire image
-    prediction_map = predict_with_rf(rf_model, all_features, flood_mask.shape)
 
-    # --- 6. Evaluation ---
-    print_evaluation_metrics(flood_mask, prediction_map)
+def train_model(
+    epochs: int = 5,
+    batch_size: int = 8,
+    lr: float = 1e-3,
+    save_path: str = "models/unet_flood_model.pth"
+) -> UNet:
+    """Train PyTorch UNet model on multi-spectral satellite imagery."""
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using compute device: {device}")
 
-    # --- 7. Save the Prediction Map ---
-    print(f"Saving prediction map to {OUTPUT_PREDICTION_FILE}...")
-    # Update metadata for the output file
-    meta.update(dtype=rasterio.uint8, count=1)
-    
-    with rasterio.open(OUTPUT_PREDICTION_FILE, 'w', **meta) as dst:
-        dst.write(prediction_map.astype(rasterio.uint8), 1)
+    train_loader, val_loader = get_dataloaders(batch_size=batch_size)
 
-    print("\nWorkflow completed successfully!")
+    model = UNet(in_channels=4, out_channels=1).to(device)
+    criterion = DiceBCELoss()
+    optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
 
-if __name__ == '__main__':
-    main()
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
+    print("\n--- Starting PyTorch U-Net Training Loop ---")
+    for epoch in range(1, epochs + 1):
+        model.train()
+        train_loss = 0.0
+
+        for images, masks in train_loader:
+            images, masks = images.to(device), masks.to(device)
+
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, masks)
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item() * images.size(0)
+
+        train_loss /= len(train_loader.dataset)
+
+        # Validation phase
+        model.eval()
+        val_metrics: Dict[str, float] = {"mIoU": 0.0, "dice_score": 0.0}
+        val_samples = 0
+
+        with torch.no_grad():
+            for images, masks in val_loader:
+                images, masks = images.to(device), masks.to(device)
+                outputs = model(images)
+                
+                batch_metrics = calculate_segmentation_metrics(masks, outputs)
+                for k in val_metrics:
+                    val_metrics[k] += batch_metrics[k] * images.size(0)
+                val_samples += images.size(0)
+
+        for k in val_metrics:
+            val_metrics[k] /= val_samples
+
+        print(
+            f"Epoch {epoch:2d}/{epochs:2d} | Train Loss: {train_loss:.4f} | "
+            f"Val mIoU: {val_metrics['mIoU']:.4f} | Val Dice: {val_metrics['dice_score']:.4f}"
+        )
+
+    torch.save(model.state_dict(), save_path)
+    print(f"\nModel checkpoint saved successfully to {save_path}")
+    return model
+
+
+if __name__ == "__main__":
+    train_model(epochs=3)

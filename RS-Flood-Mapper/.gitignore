@@ -1,0 +1,16 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+env/
+.env
+
+# Large data files - we don't want to commit these to Git!
+data/
+
+# IDE and OS specific
+.vscode/
+.idea/
+*.DS_Store
