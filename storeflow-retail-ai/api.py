@@ -45,7 +45,7 @@ def health_check():
     return {
         "status": "healthy",
         "service": "Storeflow AI Analytics API",
-        "integration_target": "https://flywheel-storeflow.pages.dev"
+        "integration_target": "https://storeflow-by-flywheel.pages.dev"
     }
 
 

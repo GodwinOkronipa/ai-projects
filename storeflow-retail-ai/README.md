@@ -2,12 +2,12 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Framework](https://img.shields.io/badge/Framework-XGBoost%20%7C%20Streamlit%20%7C%20FastAPI%20%7C%20Scikit--Learn-orange.svg)]()
-[![Storeflow Live](https://img.shields.io/badge/Live%20Platform-Flywheel%20Storeflow-green.svg)](https://flywheel-storeflow.pages.dev)
+[![Storeflow Live](https://img.shields.io/badge/Live%20Platform-Flywheel%20Storeflow-green.svg)](https://storeflow-by-flywheel.pages.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An enterprise machine learning platform and interactive decision-support system designed specifically for Ghanaian retail enterprises (SMEs in Accra, Kumasi, Takoradi, and Tamale). 
 
-Directly complements and integrates with the **[Flywheel Storeflow Management Platform](https://flywheel-storeflow.pages.dev)**.
+Directly complements and integrates with the **[Flywheel Storeflow Management Platform](https://storeflow-by-flywheel.pages.dev)**.
 
 ---
 
@@ -85,4 +85,4 @@ pytest tests/
 ---
 
 ## 🔗 Live Platform Reference
-- **Storeflow Live App**: [https://flywheel-storeflow.pages.dev](https://flywheel-storeflow.pages.dev)
+- **Storeflow Live App**: [https://storeflow-by-flywheel.pages.dev](https://storeflow-by-flywheel.pages.dev)

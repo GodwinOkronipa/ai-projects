@@ -13,7 +13,7 @@ Welcome to my Machine Learning and Artificial Intelligence portfolio repository.
 
 | Project Subfolder | Focus Area | Key Technologies & Architecture | Target Application |
 | :--- | :--- | :--- | :--- |
-| 🏬 [**`storeflow-retail-ai`**](./storeflow-retail-ai) | **Flagship AI Platform** | XGBoost, Scikit-Learn, Streamlit, FastAPI, Plotly, GHS Financial Metrics | Retail Demand Forecasting, Stockout Risk AI, Customer RFM Segmentation ([Storeflow Live Link](https://flywheel-storeflow.pages.dev)) |
+| 🏬 [**`storeflow-retail-ai`**](./storeflow-retail-ai) | **Flagship AI Platform** | XGBoost, Scikit-Learn, Streamlit, FastAPI, Plotly, GHS Financial Metrics | Retail Demand Forecasting, Stockout Risk AI, Customer RFM Segmentation ([Storeflow Live Link](https://storeflow-by-flywheel.pages.dev)) |
 | 🌐 [**`ai-web-scraper-rag`**](./ai-web-scraper-rag) | **RAG & Information Retrieval** | Meta Llama 3.2, Ollama, LangChain, BeautifulSoup4, Streamlit, FastAPI | AI-Powered Web Scraping, Semantic Vector QA, Automated Executive Summarization |
 | 🧮 [**`ml-algorithms`**](./ml-algorithms) | **Algorithms from Scratch** | NumPy, Vectorization, Matrix Calculus, Matplotlib | First-principles implementation of Linear/Logistic Regression, Decision Trees, K-Means, k-NN, PCA |
 | 💬 [**`NLPChatbot`**](./NLPChatbot) | **NLP & Conversational AI** | TF-IDF, Scikit-Learn, FastAPI, Intent Classification | Intelligent customer support bot with confidence thresholds and REST API |
@@ -25,7 +25,7 @@ Welcome to my Machine Learning and Artificial Intelligence portfolio repository.
 
 ### 1. 🏬 Storeflow AI — Ghanaian Retail Analytics & Demand Intelligence (`/storeflow-retail-ai`)
 - **Description**: An AI-powered decision support system built to optimize retail store operations in Ghana (Accra, Kumasi, Takoradi). Integrates time-series sales forecasting (GHS revenue & unit demand), customer Recency-Frequency-Monetary (RFM) clustering, and automated stockout risk prediction.
-- **Demo & Deployment**: Built with **Streamlit** and **FastAPI**. Directly bridges to the [Flywheel Storeflow Platform](https://flywheel-storeflow.pages.dev).
+- **Demo & Deployment**: Built with **Streamlit** and **FastAPI**. Directly bridges to the [Flywheel Storeflow Platform](https://storeflow-by-flywheel.pages.dev).
 
 ### 2. 🌐 AI Web Scrapper using LangChain RAG & Meta Llama 3.2 (`/ai-web-scraper-rag`)
 - **Description**: Built an AI-powered web scraper using Meta AI's Llama 3.2 model and LangChain's AI agent building toolkit that aggregates and summarizes website data, demonstrating the ability to apply ML to real-world information retrieval and analysis.

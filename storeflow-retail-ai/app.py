@@ -97,7 +97,7 @@ def main():
     
     st.sidebar.markdown("---")
     st.sidebar.info(
-        "💡 **Live Integration**: Connects seamlessly with the [Storeflow Application](https://flywheel-storeflow.pages.dev)"
+        "💡 **Live Integration**: Connects seamlessly with the [Storeflow Application](https://storeflow-by-flywheel.pages.dev)"
     )
 
     # Load Data
@@ -119,7 +119,7 @@ def main():
     st.markdown("""
     <div style="background: rgba(88, 166, 255, 0.1); border-left: 4px solid #58a6ff; padding: 12px 18px; border-radius: 6px; margin-bottom: 25px;">
         🔗 <strong>Storeflow Ecosystem Integration:</strong> Data models mirror real-time transaction events from 
-        <a href="https://flywheel-storeflow.pages.dev" target="_blank" style="color: #58a6ff; text-decoration: underline;">Flywheel Storeflow Web App</a>.
+        <a href="https://storeflow-by-flywheel.pages.dev" target="_blank" style="color: #58a6ff; text-decoration: underline;">Flywheel Storeflow Web App</a>.
     </div>
     """, unsafe_allow_html=True)
 
