@@ -27,29 +27,29 @@ Severe climate events and flash floods pose catastrophic threats to infrastructu
 
 ```mermaid
 flowchart TD
-    subgraph DataIngestion["1. Multi-Format Ingestion & Preprocessing"]
-        A["Satellite Imagery (GeoTIFF / PNG / NPY)"] --> B["Band Normalization (P2 - P98 Robust Scaling)"]
-        B --> C["Spectral Feature Extraction (RGB + NDWI + SAR)"]
+    subgraph S1 [1. Ingestion and Preprocessing]
+        A[Satellite Imagery: GeoTIFF, PNG, NPY] --> B[Band Normalization: P2 to P98]
+        B --> C[Feature Extraction: RGB, NDWI, SAR]
     end
 
-    subgraph DetectionEngine["2. Dual Detection & Segmentation Engine"]
-        C --> D1["Random Forest Classifier (ML)"]
-        C --> D2["Spectral Water Index Cutoff (NDWI)"]
-        C --> D3["Adaptive Histogram Thresholding (Otsu)"]
-        D1 --> E["Binary Inundation Mask"]
+    subgraph S2 [2. Detection and Segmentation]
+        C --> D1[Random Forest Classifier]
+        C --> D2[Spectral Water Index Cutoff]
+        C --> D3[Adaptive Otsu Thresholding]
+        D1 --> E[Binary Inundation Mask]
         D2 --> E
         D3 --> E
     end
 
-    subgraph SpatialAnalysis["3. Spatial Graph & Hazard Zonation"]
-        E --> F["Euclidean Distance Transform (scipy.ndimage.distance_transform_edt)"]
-        F --> G["3-Tier Hazard Zonation (Flooded | Caution | Safe)"]
-        G --> H["A* Shortest Safe Pathfinding (Cost Surface Penalization)"]
+    subgraph S3 [3. Spatial Analysis and Hazard Zonation]
+        E --> F[Euclidean Distance Transform]
+        F --> G[3-Tier Zonation: Flooded, Caution, Safe]
+        G --> H[A-Star Safe Pathfinding on Cost Surface]
     end
 
-    subgraph Reporting["4. Command Center HUD & Deliverables"]
-        H --> I["Interactive Streamlit Web Dashboard"]
-        I --> J["GeoTIFF / PNG Masks & JSON Situation Briefings"]
+    subgraph S4 [4. Mapping and Reporting]
+        H --> I[OpenStreetMap and Streamlit UI]
+        I --> J[GeoTIFF, PNG Masks and JSON Reports]
     end
 ```
 
