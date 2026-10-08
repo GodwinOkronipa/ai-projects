@@ -18,6 +18,7 @@ Welcome to my Machine Learning and Artificial Intelligence portfolio repository.
 | 🧮 [**`ml-algorithms`**](./ml-algorithms) | **Algorithms from Scratch** | NumPy, Vectorization, Matrix Calculus, Matplotlib | First-principles implementation of Linear/Logistic Regression, Decision Trees, K-Means, k-NN, PCA |
 | 💬 [**`NLPChatbot`**](./NLPChatbot) | **NLP & Conversational AI** | TF-IDF, Scikit-Learn, FastAPI, Intent Classification | Intelligent customer support bot with confidence thresholds and REST API |
 | 🛰️ [**`RS-Flood-Mapper`**](./RS-Flood-Mapper) | **Deep Learning & Earth Observation** | PyTorch, U-Net, Multi-Spectral Remote Sensing, Sentinel-1/2 | Automated flood extent extraction and disaster response analytics |
+| 🌍 [**`climate-risk-health-prediction`**](./climate-risk-health-prediction) | **Climate & Health ML (Zindi)** | LightGBM, XGBoost, Scikit-Learn, Pandas, Multi-Metric Ensembling | Climate-sensitive mortality prediction, ERA5-Land/CHIRPS satellite climate anomaly modeling |
 
 ---
 
@@ -39,6 +40,10 @@ Welcome to my Machine Learning and Artificial Intelligence portfolio repository.
 
 ### 5. 🛰️ Remote Sensing Flood Mapper (`/RS-Flood-Mapper`)
 - **Description**: Semantic segmentation deep learning pipeline in **PyTorch** using a U-Net architecture to map flood extents from synthetic/real Sentinel-1 SAR and Sentinel-2 optical imagery (NDWI).
+
+### 6. 🌍 Climate Risk & Health Prediction AI (`/climate-risk-health-prediction`)
+- **Description**: Competitive machine learning pipeline built for the **Zindi Climate Risk and Health Prediction Challenge**. Predicts whether mortality cases fall into climate-sensitive categories based on demographic vulnerability, East African bimodal seasonality, and satellite meteorological anomaly deltas (CHIRPS precipitation, ERA5-Land temperature, MODIS NDVI, SRTM terrain).
+- **Architecture**: 5-Fold Stratified Cross-Validation using LightGBM, XGBoost, and calibrated Logistic Regression with Nelder-Mead ensemble blending (OOF Final Score: **0.7988**, ROC-AUC: **0.8098**).
 
 ---
 
