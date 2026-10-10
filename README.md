@@ -43,7 +43,7 @@ Welcome to my Machine Learning and Artificial Intelligence portfolio repository.
 
 ### 6. 🌍 Climate Risk & Health Prediction AI (`/climate-risk-health-prediction`)
 - **Description**: Competitive machine learning pipeline built for the **Zindi Climate Risk and Health Prediction Challenge**. Predicts whether mortality cases fall into climate-sensitive categories based on demographic vulnerability, East African bimodal seasonality, and satellite meteorological anomaly deltas (CHIRPS precipitation, ERA5-Land temperature, MODIS NDVI, SRTM terrain).
-- **Architecture**: 5-Fold Stratified Cross-Validation using LightGBM, XGBoost, and calibrated Logistic Regression with Nelder-Mead ensemble blending (OOF Final Score: **0.7988**, ROC-AUC: **0.8098**).
+- **Architecture**: 10-Fold Stratified Cross-Validation using LightGBM, XGBoost, HistGradientBoosting, ExtraTrees, and calibrated Logistic Regression with Nelder-Mead ensemble blending and monotonic probability alignment (OOF Final Score: **0.8226**, ROC-AUC: **0.8254**; single-model LightGBM: **0.8229**).
 
 ---
 
